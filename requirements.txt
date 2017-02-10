@@ -1,0 +1,2 @@
+parsy==0.0.4
+marisa-trie==0.7.2
