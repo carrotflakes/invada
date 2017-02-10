@@ -109,10 +109,10 @@ def choice():
         'elements': rest
     }
 
-parser = whitespace >> choice
+matcher = whitespace >> choice
 
 
 if __name__ == '__main__':
-    print(parser.parse('ええと、 %tell_me(#果物@果物) | #果物 (教えて|テルミー)'))
-    print(parser.parse('$a $b'))
-    print(parser.parse('\@\%\(\)'))
+    print(matcher.parse('ええと、 %tell_me(#果物@果物) | #果物 (教えて|テルミー)'))
+    print(matcher.parse('$a $b'))
+    print(matcher.parse('\@\%\(\)'))

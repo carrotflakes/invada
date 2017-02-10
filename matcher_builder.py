@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from matcher_parser import parser
+from matcher_parser import matcher as matcher_parser
 import marisa_trie
 
 class MatcherBuilder:
@@ -15,7 +15,7 @@ class MatcherBuilder:
         self.traps_trie = marisa_trie.Trie(traps.keys())
 
     def build(self, source):
-        ast = parser.parse(source)
+        ast = matcher_parser.parse(source)
         ast = self.ast_prepare(ast)
 
         def matcher(user_utterance, knowledge):

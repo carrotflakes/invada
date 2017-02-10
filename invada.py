@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from matcher_parser import parser
+from matcher_parser import matcher
 from matcher_builder import MatcherBuilder
 from response_pair import ResponsePair
 from engine import Engine
@@ -26,17 +26,17 @@ if __name__ == '__main__':
         {
             'name': 'twice',
             'parameters': ['a'],
-            'ast': parser.parse('$a $a')
+            'ast': matcher.parse('$a $a')
         },
         {
             'name': 'tell_me',
             'parameters': ['a'],
-            'ast': parser.parse('$a について教えて|$a を教えて|$a 教えて|$a って何|$a って何?')
+            'ast': matcher.parse('$a について教えて|$a を教えて|$a 教えて|$a って何|$a って何?')
         },
     ]
     traps = {
-        '?': parser.parse('? | ？'),
-        '何': parser.parse('何 | なに')
+        '?': matcher.parse('? | ？'),
+        '何': matcher.parse('何 | なに')
     }
 
     matcher_builder = MatcherBuilder(ontology, macros, traps)
