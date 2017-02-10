@@ -10,11 +10,11 @@ lexeme = lambda p: p << whitespace
 comma  = lexeme(string(','))
 pipe  = lexeme(string('|'))
 
-mstr_part = regex(r'[^%$#@,|()\s\\]+')
+mstr_part = regex(r'[^%$#@,|();\s\\]+')
 mstr_esc = string('\\') >> (
   string('\\')
   | string('/')
-  | regex(r'[%$#@,|()\s]')
+  | regex(r'[%$#@,|();\s]')
   | string('b').result('\b')
   | string('f').result('\f')
   | string('n').result('\n')
