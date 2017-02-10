@@ -48,7 +48,8 @@ class MatcherBuilder:
                         })
                     elements.append(self.traps[trap_key])
                     i = j = j + len(trap_key)
-                j += 1
+                else:
+                    j += 1
             if i < j - 1:
                 elements.append({
                     'type': 'text',

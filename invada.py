@@ -31,7 +31,7 @@ if __name__ == '__main__':
         {
             'name': 'tell_me',
             'parameters': ['a'],
-            'ast': matcher.parse('$a について教えて|$a を教えて|$a 教えて|$a って何|$a って何?')
+            'ast': matcher.parse('$a について教えて|$a を教えて|$a 教えて|$a って何?|$a って何')
         },
     ]
     traps = {
