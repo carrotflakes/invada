@@ -10,7 +10,20 @@ lexeme = lambda p: p << whitespace
 comma  = lexeme(string(','))
 pipe  = lexeme(string('|'))
 
-mstr = lexeme(regex(r'[^%$#@,|()\s]+'))
+mstr_part = regex(r'[^%$#@,|()\s\\]+')
+mstr_esc = string('\\') >> (
+  string('\\')
+  | string('/')
+  | regex(r'[%$#@,|()\s]')
+  | string('b').result('\b')
+  | string('f').result('\f')
+  | string('n').result('\n')
+  | string('r').result('\r')
+  | string('t').result('\t')
+  | regex(r'u[0-9a-fA-F]{4}').map(lambda s: chr(int(s[1:], 16)))
+)
+
+mstr = lexeme((mstr_part | mstr_esc).at_least(1).map(''.join))
 
 
 @generate
@@ -102,3 +115,4 @@ parser = whitespace >> choice
 if __name__ == '__main__':
     print(parser.parse('ええと、 %tell_me(#果物@果物) | #果物 (教えて|テルミー)'))
     print(parser.parse('$a $b'))
+    print(parser.parse('\@\%\(\)'))
