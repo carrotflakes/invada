@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from invada import matcher_parser, macro_definitions_parser, MatcherBuilder, ResponsePair, Engine
+import unicodedata
 
 ontology = {
     '#果物': {'#りんご', '#みかん', '#ぶどう'},
@@ -16,7 +17,6 @@ macros = macro_definitions_parser.parse('''
 ''')
 
 traps = {
-    '?': matcher_parser.parse('? | ？'),
     '何': matcher_parser.parse('何 | なに'),
     '私': matcher_parser.parse('私 | わたし'),
     '名前': matcher_parser.parse('名前 | なまえ'),
@@ -91,5 +91,6 @@ if __name__ == '__main__':
     print('いらっしゃいませ！')
     while True:
         user_utterance = input()
+        user_utterance = unicodedata.normalize('NFKC', user_utterance)
         bot_utterance, context = engine.chat(user_utterance, context)
         print(bot_utterance)
