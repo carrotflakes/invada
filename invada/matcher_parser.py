@@ -10,11 +10,11 @@ lexeme = lambda p: p << whitespace
 comma  = lexeme(string(','))
 pipe  = lexeme(string('|'))
 
-mstr_part = regex(r'[^%$#@,|();\s\\]+')
+mstr_part = regex(r'[^%$#@*,|();\s\\]+')
 mstr_esc = string('\\') >> (
   string('\\')
   | string('/')
-  | regex(r'[%$#@,|();\s]')
+  | regex(r'[%$#@*,|();\s]')
   | string('b').result('\b')
   | string('f').result('\f')
   | string('n').result('\n')
@@ -83,6 +83,20 @@ def ref():
         'name': ref_name
     }
 
+anystr = lexeme(string('*')).result({
+    'type': 'any',
+    'label': None
+})
+
+@generate
+def labeledAnystr():
+    yield lexeme(string('*')) << lexeme(string('@'))
+    label = yield mstr
+    return {
+        'type': 'any',
+        'label': label
+    }
+
 @generate
 def paren():
     yield lexeme(string('('))
@@ -92,7 +106,7 @@ def paren():
 
 @generate
 def sequence():
-    elements = yield (text | macro | labeledEntity | entity | ref | paren).at_least(1)
+    elements = yield (text | macro | labeledEntity | entity | labeledAnystr | anystr | ref | paren).at_least(1)
     if len(elements) == 1:
         return elements[0]
     return {

@@ -19,9 +19,7 @@ class MatcherBuilder:
         ast = self.ast_prepare(ast)
 
         def matcher(user_utterance, knowledge):
-            result = self.match(ast, user_utterance, {})
-            if result and len(result[0]) == 0:
-                return result[1]
+            return self.match(ast, user_utterance)
 
         return matcher # (user_utterance, knowledge) => match_result
 
@@ -87,32 +85,47 @@ class MatcherBuilder:
             return bindings[ast['name']]
         return ast
 
-    def match(self, ast, text, captured):
-        if ast['type'] == 'sequence':
-            for element in ast['elements']:
-                result = self.match(element, text, captured)
-                if not result:
-                    return None
-                text, captured = result
-            return text, captured
-        if ast['type'] == 'choice':
-            for element in ast['elements']:
-                result = self.match(element, text, captured)
-                if result:
-                    captured.update(result[1])
-                    return result[0], captured
-            return None
-        elif ast['type'] == 'text':
-            if ast['text'] == text[:len(ast['text'])]:
-                return text[len(ast['text']):], captured
-            return None
-        elif ast['type'] == 'entity':
-            instance =  self.match_entity(ast['name'], text)
-            if instance:
-                text = text[len(instance['raw']):]
-                if ast['label'] is not None:
-                    captured[ast['label']] = instance
-                return text, captured
+    def match(self, ast, text):
+        branches = [([ast], text, [])]
+
+        while branches:
+            thunk, text, captured = branches.pop(0)
+            if not thunk:
+                if len(text) == 0:
+                    return dict(captured)
+                else:
+                    continue
+            ast = thunk.pop()
+
+            if ast['type'] == 'sequence':
+                thunk.extend(reversed(ast['elements']))
+                branches.append((thunk, text, captured))
+            elif ast['type'] == 'choice':
+                for element in reversed(ast['elements']):
+                    branches.append((thunk + [element], text, captured))
+            elif ast['type'] == 'text':
+                if text.startswith(ast['text']):
+                    branches.append((thunk, text[len(ast['text']):], captured))
+            elif ast['type'] == 'entity':
+                instance =  self.match_entity(ast['name'], text)
+                if instance:
+                    text = text[len(instance['raw']):]
+                    if ast['label'] is not None:
+                        captured = captured + [(ast['label'], instance)]
+                    branches.append((thunk, text, captured))
+            elif ast['type'] == 'any':
+                if ast.get('label'):
+                    capture_item = (ast['label'], ast.get('capture', ''))
+                    branches.append((thunk, text, captured + [capture_item]))
+                else:
+                    branches.append((thunk, text, captured))
+                if len(text) > 0:
+                    new_any = {
+                        'type': 'any',
+                        'label': ast.get('label'),
+                        'capture': ast.get('capture', '') + text[0]
+                    }
+                    branches.append((thunk + [new_any], text[1:], captured))
 
     def match_entity(self, entity, text):
         if entity not in self.ontology:
