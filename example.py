@@ -39,12 +39,19 @@ raw_response_pairs = [
      lambda captured, context, knowledge: ('色ですか？', context)),
 ]
 
-def make_chatter(engine, context={}):
-    user_utterance = yield 'いらっしゃいませ！'
+knowledge = {
+    '果物': {
+        '#りんご': '赤くて丸い',
+        '#みかん': 'いろんな種類がある',
+        '#ぶどう': 'ワインの原料だ',
+    }
+}
 
+def default_response_generator(captured, context, knowledge):
+    return 'えっ？', context
+
+def make_chatter(engine, context={}):
     while True:
-        bot_utterance, context = engine.chat(user_utterance, context)
-        user_utterance = yield bot_utterance
 
 
 if __name__ == '__main__':
@@ -60,22 +67,14 @@ if __name__ == '__main__':
     response_pairs = [make_response_pair(raw_response_pair)
                       for raw_response_pair in raw_response_pairs]
 
-    knowledge = {
-        '果物': {
-            '#りんご': '赤くて丸い',
-            '#みかん': 'いろんな種類がある',
-            '#ぶどう': 'ワインの原料だ',
-        }
-    }
-
-    def default_response_generator(x, context, y):
-        return 'えっ？', context
-
     engine = Engine(response_pairs,
                     default_response_generator=default_response_generator,
                     knowledge=knowledge)
 
-    chatter = make_chatter(engine)
-    print(next(chatter))
+    context = {}
+
+    print('いらっしゃいませ！')
     while True:
-        print(chatter.send(input()))
+        user_utterance = chatter.send(input())
+        bot_utterance, context = engine.chat(user_utterance, context)
+        print(bot_utterance)
