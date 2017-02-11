@@ -27,11 +27,17 @@ class MatcherBuilder:
 
     def ast_prepare(self, ast, bindings={}):
         if ast['type'] == 'sequence':
-            ast['elements'] = [self.ast_prepare(element, bindings)
-                               for element in ast['elements']]
-        if ast['type'] == 'choice':
-            ast['elements'] = [self.ast_prepare(element, bindings)
-                               for element in ast['elements']]
+            return {
+                'type': 'sequence',
+                'elements': [self.ast_prepare(element, bindings)
+                             for element in ast['elements']]
+            }
+        elif ast['type'] == 'choice':
+            return {
+                'type': 'choice',
+                'elements': [self.ast_prepare(element, bindings)
+                             for element in ast['elements']]
+            }
         elif ast['type'] == 'text':
             text = ast['text']
             elements = []
@@ -55,8 +61,10 @@ class MatcherBuilder:
                     'type': 'text',
                     'text': text[i:j]
                 })
-            if len(elements) != 1:
-                ast = {
+            if len(elements) == 1:
+                return ast
+            else:
+                return {
                     'type': 'sequence',
                     'elements': elements
                 }
@@ -69,14 +77,14 @@ class MatcherBuilder:
                     new_bindings.update(bindings)
                     elements.append(self.ast_prepare(macro['ast'], new_bindings))
             if len(elements) == 1:
-                ast = elements[0]
+                return elements[0]
             else:
-                ast = {
+                return {
                     'type': 'choice',
                     'elements': elements
                 }
         elif ast['type'] == 'ref':
-            ast = bindings[ast['name']]
+            return bindings[ast['name']]
         return ast
 
     def match(self, ast, text, captured):
