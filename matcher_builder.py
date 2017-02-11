@@ -50,7 +50,7 @@ class MatcherBuilder:
                     i = j = j + len(trap_key)
                 else:
                     j += 1
-            if i < j - 1:
+            if i < j:
                 elements.append({
                     'type': 'text',
                     'text': text[i:j]

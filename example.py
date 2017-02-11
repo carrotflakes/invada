@@ -12,6 +12,7 @@ ontology = {
 macros = macro_definitions_parser.parse('''
 %twice(a) = $a $a ;
 %tell_me(a) = $a について教えて|$a を教えて|$a 教えて|$a って何?|$a って何 ;
+%color() = 赤 | 青 | 黄 ;
 ''')
 
 traps = {
@@ -33,6 +34,9 @@ raw_response_pairs = [
     ('%tell_me(#果物@果物)',
      lambda captured, context, knowledge: 1,
      lambda captured, context, knowledge: ('{}は{}よ'.format(captured['果物']['raw'], knowledge['果物'][captured['果物']['entity']]), context)),
+    ('%color()',
+     lambda captured, context, knowledge: 1,
+     lambda captured, context, knowledge: ('色ですか？', context)),
 ]
 
 def make_chatter(engine, context={}):
