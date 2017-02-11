@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from matcher_parser import *
+from .matcher_parser import *
 
 @generate
 def macro_definition():
