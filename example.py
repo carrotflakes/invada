@@ -50,9 +50,6 @@ knowledge = {
 def default_response_generator(captured, context, knowledge):
     return 'えっ？', context
 
-def make_chatter(engine, context={}):
-    while True:
-
 
 if __name__ == '__main__':
 
@@ -75,6 +72,6 @@ if __name__ == '__main__':
 
     print('いらっしゃいませ！')
     while True:
-        user_utterance = chatter.send(input())
+        user_utterance = input()
         bot_utterance, context = engine.chat(user_utterance, context)
         print(bot_utterance)
