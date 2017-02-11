@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from matcher_parser import matcher as matcher_parser
+from .matcher_parser import matcher as matcher_parser
 import marisa_trie
 
 class MatcherBuilder:

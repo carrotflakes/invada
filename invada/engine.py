@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from response_pair import ResponsePair
+from .response_pair import ResponsePair
 
 
 default_response_generator = lambda captured, context, knowledge: ('', context)
