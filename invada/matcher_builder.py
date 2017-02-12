@@ -65,7 +65,7 @@ class MatcherBuilder:
                     'text': text[i:j]
                 })
             if len(elements) == 1:
-                return ast
+                return elements[0]
             else:
                 return {
                     'type': 'sequence',
