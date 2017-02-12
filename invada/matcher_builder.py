@@ -8,11 +8,11 @@ class MatcherBuilder:
     def __init__(self,
                  ontology={},
                  macros=[],
-                 traps={}):
+                 phrases={}):
         self.ontology = ontology
         self.macros = macros
-        self.traps = traps
-        self.traps_trie = marisa_trie.Trie(traps.keys())
+        self.phrases = phrases
+        self.phrases_trie = marisa_trie.Trie(phrases.keys())
 
     def build(self, source):
         ast = matcher_parser.parse(source)
@@ -46,17 +46,17 @@ class MatcherBuilder:
             elements = []
             i = j = 0
             while j < len(text):
-                prefixes = self.traps_trie.prefixes(text[j:])
+                prefixes = self.phrases_trie.prefixes(text[j:])
                 if len(prefixes) > 0:
                     prefixes.sort(key=len, reverse=True)
-                    trap_key = prefixes[0]
+                    phrase_key = prefixes[0]
                     if i < j:
                         elements.append({
                             'type': 'text',
                             'text': text[i:j]
                         })
-                    elements.append(self.traps[trap_key])
-                    i = j = j + len(trap_key)
+                    elements.append(self.phrases[phrase_key])
+                    i = j = j + len(phrase_key)
                 else:
                     j += 1
             if i < j:

@@ -16,7 +16,7 @@ macros = macro_definitions_parser.parse('''
 %color() = 赤 | 青 | 黄 ;
 ''')
 
-traps = {
+phrases = {
     '何': matcher_parser.parse('何 | なに'),
     '私': matcher_parser.parse('私 | わたし'),
     '名前': matcher_parser.parse('名前 | なまえ'),
@@ -60,6 +60,12 @@ raw_response_pairs = [
     ('*',
      lambda captured, context, knowledge: 0.01,
      lambda captured, context, knowledge: ('えっ？', context)),
+    ('* (寿司 | すし) *',
+     lambda captured, context, knowledge: 0.02,
+     lambda captured, context, knowledge: ('🍣', context)),
+    ('$empty',
+     lambda captured, context, knowledge: 1,
+     lambda captured, context, knowledge: ('なにか言ってよ！', context)),
 ]
 
 knowledge = {
@@ -73,7 +79,7 @@ knowledge = {
 
 if __name__ == '__main__':
 
-    matcher_builder = MatcherBuilder(ontology, macros, traps)
+    matcher_builder = MatcherBuilder(ontology, macros, phrases)
 
     def make_response_pair(raw_response_pair):
         matcher, scorer, generator = raw_response_pair
