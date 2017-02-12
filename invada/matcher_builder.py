@@ -23,7 +23,7 @@ class MatcherBuilder:
 
         return matcher # (user_utterance, knowledge) => match_result
 
-    def ast_prepare(self, ast, bindings=None):
+    def ast_prepare(self, ast, bindings=None, no_phrase_expansion=False):
         if bindings is None:
             bindings = {
                 'empty': {'type': 'text', 'text': ''}
@@ -32,16 +32,19 @@ class MatcherBuilder:
         if ast['type'] == 'sequence':
             return {
                 'type': 'sequence',
-                'elements': [self.ast_prepare(element, bindings)
+                'elements': [self.ast_prepare(element, bindings, no_phrase_expansion)
                              for element in ast['elements']]
             }
         elif ast['type'] == 'choice':
             return {
                 'type': 'choice',
-                'elements': [self.ast_prepare(element, bindings)
+                'elements': [self.ast_prepare(element, bindings, no_phrase_expansion)
                              for element in ast['elements']]
             }
         elif ast['type'] == 'text':
+            if no_phrase_expansion:
+                return ast
+
             text = ast['text']
             elements = []
             i = j = 0
@@ -55,7 +58,7 @@ class MatcherBuilder:
                             'type': 'text',
                             'text': text[i:j]
                         })
-                    elements.append(self.ast_prepare(self.phrases[phrase_key], bindings))
+                    elements.append(self.ast_prepare(self.phrases[phrase_key], bindings, True))
                     i = j = j + len(phrase_key)
                 else:
                     j += 1
@@ -73,12 +76,12 @@ class MatcherBuilder:
                 }
         elif ast['type'] == 'macro':
             elements = []
-            arguments = [self.ast_prepare(argument, bindings) for argument in ast['arguments']]
+            arguments = [self.ast_prepare(argument, bindings, no_phrase_expansion) for argument in ast['arguments']]
             for macro in self.macros:
                 if macro['name'] == ast['name'] and len(macro['parameters']) == len(ast['arguments']):
                     new_bindings = dict(zip(macro['parameters'], arguments))
                     new_bindings.update(bindings)
-                    elements.append(self.ast_prepare(macro['ast'], new_bindings))
+                    elements.append(self.ast_prepare(macro['ast'], new_bindings, no_phrase_expansion))
             if len(elements) == 1:
                 return elements[0]
             else:
