@@ -55,7 +55,7 @@ class MatcherBuilder:
                             'type': 'text',
                             'text': text[i:j]
                         })
-                    elements.append(self.phrases[phrase_key])
+                    elements.append(self.ast_prepare(self.phrases[phrase_key], bindings))
                     i = j = j + len(phrase_key)
                 else:
                     j += 1
