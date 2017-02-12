@@ -23,7 +23,12 @@ class MatcherBuilder:
 
         return matcher # (user_utterance, knowledge) => match_result
 
-    def ast_prepare(self, ast, bindings={}):
+    def ast_prepare(self, ast, bindings=None):
+        if bindings is None:
+            bindings = {
+                'empty': {'type': 'text', 'text': ''}
+            }
+
         if ast['type'] == 'sequence':
             return {
                 'type': 'sequence',
