@@ -24,4 +24,5 @@ class Engine:
             if best_score < score:
                 best_score, best_response_pair, best_captured = score, response_pair, captured
 
-        return best_response_pair.generate(best_captured, context, self.knowledge)
+        response, new_context = best_response_pair.generate(best_captured, context, self.knowledge)
+        return response, new_context, best_score
