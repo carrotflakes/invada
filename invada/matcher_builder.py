@@ -76,11 +76,11 @@ class MatcherBuilder:
                 }
         elif ast['type'] == 'macro':
             elements = []
-            arguments = [self.ast_prepare(argument, bindings, no_phrase_expansion) for argument in ast['arguments']]
+            arguments = [self.ast_prepare(argument, bindings, False) for argument in ast['arguments']]
             for macro in self.macros:
-                if macro['name'] == ast['name'] and len(macro['parameters']) == len(ast['arguments']):
-                    new_bindings = dict(zip(macro['parameters'], arguments))
-                    new_bindings.update(bindings)
+                if macro['name'] == ast['name'] and len(macro['parameters']) == len(arguments):
+                    new_bindings = bindings.copy()
+                    new_bindings.update(dict(zip(macro['parameters'], arguments)))
                     elements.append(self.ast_prepare(macro['ast'], new_bindings, no_phrase_expansion))
             if len(elements) == 1:
                 return elements[0]
